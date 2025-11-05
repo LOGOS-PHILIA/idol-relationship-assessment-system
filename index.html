@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>"偶像"关系价值健康度测评系统 | 逻各爱</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --highlight: #3282b8;
+            --light: #bbd4e9;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f4c75 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f1 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: var(--gradient);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--highlight), var(--light));
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .tagline {
+            font-style: italic;
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+        
+        .progress-container {
+            margin: 40px 0;
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .section {
+            background: white;
+            margin-bottom: 25px;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: var(--dark);
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 16px 20px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option:hover {
+            border-color: var(--highlight);
+            background: rgba(50, 130, 184, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: var(--highlight);
+            background: rgba(50, 130, 184, 0.1);
+            box-shadow: 0 4px 12px rgba(50, 130, 184, 0.2);
+        }
+        
+        .neuro-question {
+            background: rgba(50, 130, 184, 0.05);
+            border-left: 4px solid var(--highlight);
+            padding-left: 20px;
+            margin-top: 20px;
+        }
+        
+        .neuro-label {
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        
+        button {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-prev {
+            background: #f8f9fa;
+            color: var(--primary);
+            border: 2px solid #e1e5eb;
+        }
+        
+        .btn-prev:hover {
+            background: #e9ecef;
+            transform: translateX(-3px);
+        }
+        
+        .btn-next {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 15px rgba(15, 76, 117, 0.3);
+        }
+        
+        .btn-next:hover {
+            background: var(--highlight);
+            transform: translateX(3px);
+            box-shadow: 0 6px 20px rgba(15, 76, 117, 0.4);
+        }
+        
+        .btn-generate {
+            background: var(--highlight);
+            color: white;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(50, 130, 184, 0.3);
+        }
+        
+        .btn-generate:hover {
+            background: #2a6fa3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(50, 130, 184, 0.4);
+        }
+        
+        .report-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: none;
+        }
+        
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .report-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+        
+        .report-id {
+            color: #7f8c8d;
+            font-size: 1rem;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .report-section {
+            margin-bottom: 40px;
+        }
+        
+        .report-section-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .dimension {
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--highlight);
+            transition: transform 0.3s ease;
+        }
+        
+        .dimension:hover {
+            transform: translateY(-3px);
+        }
+        
+        .dimension-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .dimension-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .alert-box {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .alert-high {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .alert-medium {
+            background: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning);
+        }
+        
+        .alert-warning {
+            background: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid #f1c40f;
+        }
+        
+        .alert-low {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        
+        .insight-box {
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            font-style: italic;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+        
+        .insight-box::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 3rem;
+            color: var(--light);
+            font-family: serif;
+        }
+        
+        .explanation-box {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+            border-left: 4px solid var(--highlight);
+        }
+        
+        .relationship-pattern {
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .pattern-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .pricing-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .pricing-card {
+            flex: 1;
+            padding: 30px;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 2px solid #e1e5eb;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--primary);
+        }
+        
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--highlight);
+        }
+        
+        .pricing-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--highlight);
+        }
+        
+        .pricing-features {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .pricing-feature {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            color: var(--primary);
+        }
+        
+        .feature-icon {
+            margin-right: 12px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .btn-purchase {
+            background: var(--highlight);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(50, 130, 184, 0.3);
+        }
+        
+        .btn-purchase:hover {
+            background: #2a6fa3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(50, 130, 184, 0.4);
+        }
+        
+        .btn-download {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(26, 26, 46, 0.3);
+        }
+        
+        .btn-download:hover {
+            background: #0f0f1a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 26, 46, 0.4);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .dimension-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-options {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>"偶像"关系价值健康度测评系统</h1>
+            <div class="subtitle">基于认知神经生物学与资源配置理论的理性评估体系</div>
+            <div class="tagline">逻各爱 · 让每一份情感投入创造真实价值</div>
+        </header>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="progress-text" id="progress-text">进度 1 / 5</div>
+        </div>
+        
+        <!-- 关系基础与神经印记 -->
+        <div class="section active" id="section-0">
+            <h2 class="section-title">关系基础与神经印记</h2>
+            <div class="question">
+                <div class="question-text">1. 您要评估的"偶像"是？</div>
+                <input type="text" id="idol-name" placeholder="请输入偶像姓名或团体名称">
+            </div>
+            <div class="question">
+                <div class="question-text">2. 该"偶像"的职业发展周期为？</div>
+                <div class="options">
+                    <div class="option" data-value="0-2">初期阶段（<2年，新人期）</div>
+                    <div class="option" data-value="10+">成熟期（>10年，资深期）</div>
+                    <div class="option" data-value="5-10">稳定期（5-10年，成熟期）</div>
+                    <div class="option" data-value="2-5">成长期（2-5年，上升期）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">3. 您对该"偶像"的关注持续时间为？</div>
+                <div class="options">
+                    <div class="option" data-value="3-5">长期关注（3-5年）</div>
+                    <div class="option" data-value="0-1">短期关注（<1年）</div>
+                    <div class="option" data-value="5+">超长期关注（>5年）</div>
+                    <div class="option" data-value="1-3">中期关注（1-3年）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">4. "偶像"对您产生吸引力的核心因素为？</div>
+                <div class="options">
+                    <div class="option" data-value="4">情感依恋需求（情感寄托）</div>
+                    <div class="option" data-value="1">视觉表象特征（颜值、形象）</div>
+                    <div class="option" data-value="3">人格特质共鸣（性格、价值观）</div>
+                    <div class="option" data-value="5">社会认同驱动（周围人都喜欢）</div>
+                    <div class="option" data-value="2">能力才华表现（才华、实力）</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">5. 当看到或想到该"偶像"时，您的反应通常是？</div>
+                <div class="options">
+                    <div class="option" data-value="3">明显愉悦，需要较长时间平复</div>
+                    <div class="option" data-value="1">负面情绪，并影响当前任务效率</div>
+                    <div class="option" data-value="2">适度愉悦，短暂影响当前任务效率</div>
+                    <div class="option" data-value="4">强烈情感反应，严重影响其他活动</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">6. 您对"偶像"相关信息的记忆和关注度如何？</div>
+                <div class="options">
+                    <div class="option" data-value="4">会主动排除其他信息以确保关注</div>
+                    <div class="option" data-value="2">比普通信息记忆更深刻</div>
+                    <div class="option" data-value="1">与普通信息无异，容易遗忘</div>
+                    <div class="option" data-value="3">会自动优先处理相关信息</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">7. 当"偶像"取得成就时，您的大脑通常如何反应？</div>
+                <div class="options">
+                    <div class="option" data-value="4">引发负面情绪</div>
+                    <div class="option" data-value="2">轻微愉悦，类似看到好消息</div>
+                    <div class="option" data-value="1">无特殊感受</div>
+                    <div class="option" data-value="3">强烈愉悦，类似自身取得成就</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn-prev" style="visibility: hidden;">上一步</button>
+                <button class="btn-next">下一步</button>
+            </div>
+        </div>
+        
+        <!-- "偶像"价值与奖赏评估系统 -->
+        <div class="section" id="section-1">
+            <h2 class="section-title">"偶像"价值与奖赏评估系统</h2>
+            <div class="question">
+                <div class="question-text">1. 该"偶像"的年收入水平处于？</div>
+                <div class="options">
+                    <div class="option" data-value="2">行业中位（100万-1000万元）</div>
+                    <div class="option" data-value="4">行业顶端（≥1亿元）</div>
+                    <div class="option" data-value="1">行业基础（≤100万元）</div>
+                    <div class="option" data-value="3">行业前列（1000万-1亿元）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">2. 该"偶像"的核心收入结构特征为？</div>
+                <div class="options">
+                    <div class="option" data-value="1">收入来源单一且波动性高</div>
+                    <div class="option" data-value="4">高价值商业合作与主导性项目</div>
+                    <div class="option" data-value="3">稳定商业合作与常规性项目</div>
+                    <div class="option" data-value="2">粉丝经济依赖型收入结构</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">3. "偶像"作品的市场价值认可度为？</div>
+                <div class="options">
+                    <div class="option" data-value="2">作品数量稳定但影响力有限</div>
+                    <div class="option" data-value="4">具有现象级破圈影响力</div>
+                    <div class="option" data-value="1">缺乏代表性作品支撑</div>
+                    <div class="option" data-value="3">核心受众群体高度认可</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">4. "偶像"的公众形象资本与社会资源状况为？</div>
+                <div class="options">
+                    <div class="option" data-value="2">形象波动与资源获取不稳定</div>
+                    <div class="option" data-value="4">高端品牌合作与主流资源支持</div>
+                    <div class="option" data-value="1">形象受损与资源获取受限</div>
+                    <div class="option" data-value="3">稳定形象维护与常规资源获取</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">5. "偶像"与支持者间的互动模式特征为？</div>
+                <div class="options">
+                    <div class="option" data-value="1">缺乏实质性互动机制</div>
+                    <div class="option" data-value="3">高频互动但核心化服务模式</div>
+                    <div class="option" data-value="4">制度化、规范化的互动渠道</div>
+                    <div class="option" data-value="2">低频、商业化驱动的互动</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">6. "偶像"职业发展轨迹呈现？</div>
+                <div class="options">
+                    <div class="option" data-value="3">稳定维持的发展状态</div>
+                    <div class="option" data-value="1">明显衰退趋势</div>
+                    <div class="option" data-value="4">持续上升的发展态势</div>
+                    <div class="option" data-value="2">波动性调整阶段</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">7. 当评估此"偶像"的商业价值时，您的大脑更倾向于？</div>
+                <div class="options">
+                    <div class="option" data-value="4">完全情感驱动，忽视客观事实</div>
+                    <div class="option" data-value="1">理性分析，综合多项客观指标</div>
+                    <div class="option" data-value="3">容易受粉丝群体观点影响，理性分析较弱</div>
+                    <div class="option" data-value="2">主要参考公开数据，偶尔掺杂情感因素</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">8. 当看到"偶像"的商业代言或作品时，您的购买决策受何影响？</div>
+                <div class="options">
+                    <div class="option" data-value="3">偶像代言会显著影响购买意愿</div>
+                    <div class="option" data-value="1">完全基于产品本身价值</div>
+                    <div class="option" data-value="4">只要是偶像代言就倾向于购买</div>
+                    <div class="option" data-value="2">会考虑偶像因素，但仍以产品为主</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">9. 您对"偶像"商业价值的评估是否会随时间变化？</div>
+                <div class="options">
+                    <div class="option" data-value="3">经常因情感而高估价值</div>
+                    <div class="option" data-value="1">始终保持客观理性</div>
+                    <div class="option" data-value="4">持续高估，难以理性评估</div>
+                    <div class="option" data-value="2">偶尔受情感影响但能调整</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn-prev">上一步</button>
+                <button class="btn-next">下一步</button>
+            </div>
+        </div>
+        
+        <!-- 资源投入的神经经济学分析 -->
+        <div class="section" id="section-2">
+            <h2 class="section-title">资源投入的神经经济学分析</h2>
+            <div class="question">
+                <div class="question-text">1. 过去一年关于该"偶像"的主要经济投入方向为？</div>
+                <div class="options">
+                    <div class="option" data-value="4">高价值稀缺性消费（奢侈品、限量款）</div>
+                    <div class="option" data-value="1">日常性小额消费（小周边、数字专辑）</div>
+                    <div class="option" data-value="3">持续性支持性消费（会员、定期打榜）</div>
+                    <div class="option" data-value="2">体验性娱乐消费（演唱会票、官方周边）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">2. 该经济投入占个人收入的比例为？</div>
+                <div class="options">
+                    <div class="option" data-value="3">影响区间（15%-30%，需要规划）</div>
+                    <div class="option" data-value="1">无感区间（<5%，没什么感觉）</div>
+                    <div class="option" data-value="4">负担区间（>30%，影响生活）</div>
+                    <div class="option" data-value="2">感知区间（5%-15%，能感觉到）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">3. "偶像"消费决策的认知模式特征为？</div>
+                <div class="options">
+                    <div class="option" data-value="4">社会压力驱动决策（不得不花）</div>
+                    <div class="option" data-value="1">效用最大化理性决策（理性选择）</div>
+                    <div class="option" data-value="3">情感驱动型决策（开心就买）</div>
+                    <div class="option" data-value="2">有限理性决策模式（随性支持）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">4. "偶像"相关消费行为的特征是？</div>
+                <div class="options">
+                    <div class="option" data-value="3">主要体现支持性质（主要是支持）</div>
+                    <div class="option" data-value="1">纯粹商品等价交换（买的是商品）</div>
+                    <div class="option" data-value="4">纯粹情感支持行为（完全是无偿支持）</div>
+                    <div class="option" data-value="2">混合型消费与支持（一半消费一半支持）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">5. 若取消"偶像"消费，潜在可释放的经济规模为？</div>
+                <div class="options">
+                    <div class="option" data-value="4">重大规模（>5000元/月）</div>
+                    <div class="option" data-value="2">中等规模（500-2000元/月）</div>
+                    <div class="option" data-value="1">微小规模（<500元/月）</div>
+                    <div class="option" data-value="3">显著规模（2000-5000元/月）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">6. 取消或削减"偶像"消费后释放的资金您打算用于？</div>
+                <div class="options">
+                    <div class="option" data-value="3">社交人际关系</div>
+                    <div class="option" data-value="1">学习培训费用</div>
+                    <div class="option" data-value="5">基本生活品质</div>
+                    <div class="option" data-value="4">个人储蓄投资</div>
+                    <div class="option" data-value="2">健康医疗支出</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">7. 当为"偶像"消费时，您的大脑奖赏系统激活程度如何？</div>
+                <div class="options">
+                    <div class="option" data-value="2">明显激活，愉悦感强于一般消费</div>
+                    <div class="option" data-value="4">极度激活，不消费会产生戒断反应</div>
+                    <div class="option" data-value="1">适度激活，类似一般娱乐消费</div>
+                    <div class="option" data-value="3">强烈激活，消费冲动难以抑制</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">8. 在偶像相关消费决策中，您的前额叶皮层（理性控制）参与程度如何？</div>
+                <div class="options">
+                    <div class="option" data-value="3">参与度低，主要由情感驱动</div>
+                    <div class="option" data-value="1">高度参与，充分理性分析</div>
+                    <div class="option" data-value="4">几乎不参与，完全情感决策</div>
+                    <div class="option" data-value="2">适度参与，基本保持理性</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">9. 当看到限量版或稀缺的偶像商品时，您的大脑如何反应？</div>
+                <div class="options">
+                    <div class="option" data-value="4">强烈冲动，必须购买</div>
+                    <div class="option" data-value="1">保持理性，评估实际价值</div>
+                    <div class="option" data-value="2">轻微冲动，但能控制</div>
+                    <div class="option" data-value="3">明显冲动，影响判断</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn-prev">上一步</button>
+                <button class="btn-next">下一步</button>
+            </div>
+        </div>
+        
+        <!-- 认知资源的配置效率评估 -->
+        <div class="section" id="section-3">
+            <h2 class="section-title">认知资源的配置效率评估</h2>
+            <div class="question">
+                <div class="question-text">1. 关于"偶像"的信息追踪频率特征为？</div>
+                <div class="options">
+                    <div class="option" data-value="3">高频度持续关注（每天多次看）</div>
+                    <div class="option" data-value="1">偶然性信息获取（偶尔看看）</div>
+                    <div class="option" data-value="4">实时性信息更新（几乎实时刷新）</div>
+                    <div class="option" data-value="2">规律性日常追踪（每天固定看）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">2. 关注"偶像"的时间投入主要来源为？</div>
+                <div class="options">
+                    <div class="option" data-value="4">发展时间挤占（影响工作学习）</div>
+                    <div class="option" data-value="2">娱乐时间替代（替代其他娱乐）</div>
+                    <div class="option" data-value="1">碎片化时间利用（零碎时间）</div>
+                    <div class="option" data-value="3">休息时间压缩（占用休息）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">3. 关注"偶像"的认知资源投入强度等级为？</div>
+                <div class="options">
+                    <div class="option" data-value="4">超高强度全职等效（像全职工作一样）</div>
+                    <div class="option" data-value="2">中等强度项目维护（像维护项目一样）</div>
+                    <div class="option" data-value="1">低强度日常关注（轻松关注）</div>
+                    <div class="option" data-value="3">高强度兼职等效（像做兼职一样）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">4. 当"偶像"出现负面消息时，您的反应是？</div>
+                <div class="options">
+                    <div class="option" data-value="2">关注信息，积极参与讨论</div>
+                    <div class="option" data-value="4">带来负面情绪并影响日常生活</div>
+                    <div class="option" data-value="1">理性看待，等待事实</div>
+                    <div class="option" data-value="3">立即加入反黑，情绪激动</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">5. 如果把这些关注"偶像"的时间用在自我提升，您更想？</div>
+                <div class="options">
+                    <div class="option" data-value="4">健身养生</div>
+                    <div class="option" data-value="1">学习新技能</div>
+                    <div class="option" data-value="3">发展副业</div>
+                    <div class="option" data-value="2">拓展社交圈</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">6. 您是否因关注"偶像"而推迟或取消以下计划？</div>
+                <div class="options">
+                    <div class="option" data-value="3">健康管理计划</div>
+                    <div class="option" data-value="5">家庭责任履行</div>
+                    <div class="option" data-value="1">职业技能提升课程</div>
+                    <div class="option" data-value="4">个人兴趣发展</div>
+                    <div class="option" data-value="2">重要社交活动</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">7. 当因为工作学习无法查看"偶像"动态时，您的反应通常是？</div>
+                <div class="options">
+                    <div class="option" data-value="3">明显分心，频繁想看动态</div>
+                    <div class="option" data-value="1">完全不受影响</div>
+                    <div class="option" data-value="4">强烈焦虑，必须立即查看</div>
+                    <div class="option" data-value="2">轻微不适，但能专注任务</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">8. 在处理重要事务时，"偶像"相关思维会干扰您吗？</div>
+                <div class="options">
+                    <div class="option" data-value="4">持续干扰，难以专注</div>
+                    <div class="option" data-value="2">偶尔出现但不影响效率</div>
+                    <div class="option" data-value="1">从不会干扰</div>
+                    <div class="option" data-value="3">经常出现，降低工作效率</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">9. 您的大脑默认模式网络（休息时的思维活动）中，"偶像"相关思维占比如何？</div>
+                <div class="options">
+                    <div class="option" data-value="3">经常出现</div>
+                    <div class="option" data-value="1">几乎不出现</div>
+                    <div class="option" data-value="4">占据主导地位</div>
+                    <div class="option" data-value="2">偶尔出现</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn-prev">上一步</button>
+                <button class="btn-next">下一步</button>
+            </div>
+        </div>
+        
+        <!-- 机会成本的神经表征分析 -->
+        <div class="section" id="section-4">
+            <h2 class="section-title">机会成本的神经表征分析</h2>
+            <div class="question">
+                <div class="question-text">1. 因为关注"偶像"，您最近在以下方面的投入变化如何？</div>
+                <div class="options">
+                    <div class="option" data-value="4">职业技能提升：重度减少</div>
+                    <div class="option" data-value="2">职业技能提升：基本不变</div>
+                    <div class="option" data-value="1">职业技能提升：明显增加</div>
+                    <div class="option" data-value="3">职业技能提升：轻度减少</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">2. 如果没有这个"偶像"，您可能会获得哪些具体发展？</div>
+                <div class="options">
+                    <div class="option" data-value="3">建立更有价值的社交人脉</div>
+                    <div class="option" data-value="1">掌握一项实用的可提高年收入的技能</div>
+                    <div class="option" data-value="4">启动个人副业或创业项目</div>
+                    <div class="option" data-value="5">实现重要的健身或健康目标</div>
+                    <div class="option" data-value="2">学分绩点切实提高</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">3. 关注"偶像"对您的以下能力产生了什么影响？</div>
+                <div class="options">
+                    <div class="option" data-value="3">决策理性度：轻度削弱</div>
+                    <div class="option" data-value="1">决策理性度：明显提升</div>
+                    <div class="option" data-value="4">决策理性度：严重削弱</div>
+                    <div class="option" data-value="2">决策理性度：无影响</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">4. 您认为当前对"偶像"的关系投入，如果重新配置到以下领域，可能创造的估算价值是？</div>
+                <div class="options">
+                    <div class="option" data-value="2">健康投资：高价值（基于医疗费用节省估算）</div>
+                    <div class="option" data-value="4">副业发展：高价值（基于收入潜力估算）</div>
+                    <div class="option" data-value="1">技能学习：高价值（基于市场薪资涨幅估算）</div>
+                    <div class="option" data-value="3">社交拓展：高价值（基于机会价值估算）</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">5. 朋友如何评价您的"偶像"关注行为？</div>
+                <div class="options">
+                    <div class="option" data-value="3">多次劝您冷静</div>
+                    <div class="option" data-value="1">表示理解支持</div>
+                    <div class="option" data-value="4">已经不愿再提</div>
+                    <div class="option" data-value="2">觉得有点过度</div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-text">6. 如果立即停止关注这个"偶像"，您最可能？</div>
+                <div class="options">
+                    <div class="option" data-value="4">生活会出现巨大空洞</div>
+                    <div class="option" data-value="2">需要替代性填补</div>
+                    <div class="option" data-value="1">毫无影响，迅速适应</div>
+                    <div class="option" data-value="3">经历戒断反应</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">7. 从神经经济学角度看，您认为"偶像"关系对您大脑的奖赏系统产生了什么影响？</div>
+                <div class="options">
+                    <div class="option" data-value="3">中度成瘾，影响决策质量</div>
+                    <div class="option" data-value="1">适度刺激，保持理性判断</div>
+                    <div class="option" data-value="4">重度绑定，理性功能受损</div>
+                    <div class="option" data-value="2">轻度依赖，但可控</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">8. 当考虑减少对"偶像"的投入时，您的大脑会产生什么反应？</div>
+                <div class="options">
+                    <div class="option" data-value="4">强烈抗拒，产生焦虑感</div>
+                    <div class="option" data-value="1">完全理性，能客观评估</div>
+                    <div class="option" data-value="3">明显抗拒，情感上难以接受</div>
+                    <div class="option" data-value="2">轻微不适，但能克服</div>
+                </div>
+            </div>
+            <div class="question neuro-question">
+                <div class="question-text">9. 您的前额叶皮层（负责长期规划）与边缘系统（负责即时奖赏）的平衡状态如何？</div>
+                <div class="options">
+                    <div class="option" data-value="3">边缘系统影响较大，常牺牲长期利益</div>
+                    <div class="option" data-value="1">前额叶主导，能很好平衡长短期利益</div>
+                    <div class="option" data-value="4">边缘系统主导，难以考虑长期后果</div>
+                    <div class="option" data-value="2">基本平衡，偶尔偏向即时奖赏</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn-prev">上一步</button>
+                <button class="btn-generate">生成诊断报告</button>
+            </div>
+        </div>
+        
+        <!-- 报告容器 -->
+        <div class="report-container" id="report-container">
+            <div class="report-header">
+                <h2 class="report-title">"偶像"关系价值测评报告</h2>
+                <div class="report-id" id="report-id">测评编号: IDOL-RVA-<span id="timestamp"></span>-<span id="random-code"></span></div>
+            </div>
+            
+            <div class="report-section">
+                <h3 class="report-section-title">关系价值健康度评估</h3>
+                <div id="idol-value" class="dimension-value" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 20px;"></div>
+                <div class="explanation-box" id="idol-explanation">
+                    <!-- 关系价值解释将在这里动态生成 -->
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h3 class="report-section-title">您的资源投入诊断</h3>
+                <div class="dimension-grid">
+                    <div class="dimension">
+                        <div class="dimension-name">经济资源配置</div>
+                        <div class="dimension-value" id="economic-value"></div>
+                    </div>
+                    <div class="dimension">
+                        <div class="dimension-name">时间精力分配</div>
+                        <div class="dimension-value" id="time-value"></div>
+                    </div>
+                    <div class="dimension">
+                        <div class="dimension-name">认知资源占用</div>
+                        <div class="dimension-value" id="psychological-value"></div>
+                    </div>
+                    <div class="dimension">
+                        <div class="dimension-name">机会成本评估</div>
+                        <div class="dimension-value" id="opportunity-value"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h3 class="report-section-title">核心关系模式诊断</h3>
+                <div class="alert-box" id="alert-box">
+                    <!-- 动态内容 -->
+                </div>
+                <div class="insight-box" id="insight-box">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+            
+            <!-- 升级评测说明部分 - 将在PDF下载时被移除 -->
+            <div class="report-section" id="upgrade-section">
+                <h3 class="report-section-title">升级评测说明</h3>
+                <div class="pricing-options">
+                    <div class="pricing-card">
+                        <div class="pricing-title">标准版</div>
+                        <div class="pricing-price">¥288</div>
+                        <div class="pricing-features">
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 基于基础价值系统的全面测评
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 详细分析报告
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 个性化改善方案
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 3个月持续改善跟进
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 基础个性化评测
+                            </div>
+                        </div>
+                        <button class="btn-purchase">立即购买</button>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="pricing-title">专业版</div>
+                        <div class="pricing-price">¥599</div>
+                        <div class="pricing-features">
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 采用深度神经经济学评估模型
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 深度分析报告
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 个性化重建计划
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 6个月持续改善跟进
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="feature-icon">✓</span> 专属个性化评测
+                            </div>
+                        </div>
+                        <button class="btn-purchase">立即购买</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-download" id="btn-download">下载免费诊断报告 (PDF)</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentSection = 0;
+        const totalSections = 5;
+        const answers = {
+            idolName: '',
+            idolDuration: '',
+            idolIncome: [],
+            userEconomic: [],
+            userTimePsychological: [],
+            userOpportunity: []
+        };
+        
+        // DOM 加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            // 设置进度条
+            updateProgress();
+            
+            // 绑定选项点击事件
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 清除同一问题中其他选项的选中状态
+                    const question = this.closest('.question');
+                    question.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 选中当前选项
+                    this.classList.add('selected');
+                });
+            });
+            
+            // 绑定下一步按钮事件
+            document.querySelectorAll('.btn-next').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (validateSection(currentSection)) {
+                        saveSectionAnswers(currentSection);
+                        currentSection++;
+                        showSection(currentSection);
+                        updateProgress();
+                    } else {
+                        alert('请完成当前部分的所有问题');
+                    }
+                });
+            });
+            
+            // 绑定上一步按钮事件
+            document.querySelectorAll('.btn-prev').forEach(button => {
+                button.addEventListener('click', function() {
+                    currentSection--;
+                    showSection(currentSection);
+                    updateProgress();
+                });
+            });
+            
+            // 绑定生成报告按钮事件
+            document.querySelector('.btn-generate').addEventListener('click', function() {
+                if (validateSection(currentSection)) {
+                    saveSectionAnswers(currentSection);
+                    generateReport();
+                } else {
+                    alert('请完成当前部分的所有问题');
+                }
+            });
+            
+            // 绑定下载报告按钮事件
+            document.getElementById('btn-download').addEventListener('click', function() {
+                downloadPDF();
+            });
+            
+            // 绑定购买按钮事件
+            document.querySelectorAll('.btn-purchase').forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('感谢您的兴趣！付费功能即将开放，请关注官方通知。');
+                });
+            });
+        }
+        
+        function updateProgress() {
+            const progress = document.getElementById('progress');
+            const progressText = document.getElementById('progress-text');
+            
+            const percentage = (currentSection / (totalSections - 1)) * 100;
+            progress.style.width = `${percentage}%`;
+            
+            let stepText = '';
+            if (currentSection === 0) {
+                stepText = '关系基础与神经印记';
+            } else if (currentSection === 1) {
+                stepText = '"偶像"价值与奖赏评估系统';
+            } else if (currentSection === 2) {
+                stepText = '资源投入的神经经济学分析';
+            } else if (currentSection === 3) {
+                stepText = '认知资源的配置效率评估';
+            } else if (currentSection === 4) {
+                stepText = '机会成本的神经表征分析';
+            }
+            
+            // 修改：将"步骤"改为"进度"
+            progressText.textContent = `进度 ${currentSection + 1} / ${totalSections} - ${stepText}`;
+        }
+        
+        function showSection(sectionIndex) {
+            // 隐藏所有部分
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 显示当前部分
+            document.getElementById(`section-${sectionIndex}`).classList.add('active');
+            
+            // 更新按钮可见性
+            document.querySelectorAll('.btn-prev').forEach(button => {
+                if (sectionIndex === 0) {
+                    button.style.visibility = 'hidden';
+                } else {
+                    button.style.visibility = 'visible';
+                }
+            });
+        }
+        
+        function validateSection(sectionIndex) {
+            if (sectionIndex === 0) {
+                // 基本信息验证
+                const name = document.getElementById('idol-name').value.trim();
+                const durationSelected = document.querySelector('#section-0 .option.selected');
+                
+                if (!name || !durationSelected) {
+                    return false;
+                }
+                return true;
+            } else {
+                // 其他部分验证 - 确保每个问题都有选择
+                const section = document.getElementById(`section-${sectionIndex}`);
+                const questions = section.querySelectorAll('.question');
+                
+                for (let question of questions) {
+                    const selectedOption = question.querySelector('.option.selected');
+                    if (!selectedOption) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
+        function saveSectionAnswers(sectionIndex) {
+            if (sectionIndex === 0) {
+                // 保存偶像基本信息
+                answers.idolName = document.getElementById('idol-name').value.trim();
+                const durationOption = document.querySelector('#section-0 .option.selected');
+                answers.idolDuration = durationOption ? durationOption.getAttribute('data-value') : '';
+            } else if (sectionIndex === 1) {
+                // 保存偶像实力评估
+                answers.idolIncome = [];
+                document.querySelectorAll('#section-1 .option.selected').forEach(option => {
+                    answers.idolIncome.push(parseInt(option.getAttribute('data-value')));
+                });
+            } else if (sectionIndex === 2) {
+                // 保存用户经济投入评估
+                answers.userEconomic = [];
+                document.querySelectorAll('#section-2 .option.selected').forEach(option => {
+                    answers.userEconomic.push(parseInt(option.getAttribute('data-value')));
+                });
+            } else if (sectionIndex === 3) {
+                // 保存用户时间心理投入评估
+                answers.userTimePsychological = [];
+                document.querySelectorAll('#section-3 .option.selected').forEach(option => {
+                    answers.userTimePsychological.push(parseInt(option.getAttribute('data-value')));
+                });
+            } else if (sectionIndex === 4) {
+                // 保存用户机会成本评估
+                answers.userOpportunity = [];
+                document.querySelectorAll('#section-4 .option.selected').forEach(option => {
+                    answers.userOpportunity.push(parseInt(option.getAttribute('data-value')));
+                });
+            }
+        }
+        
+        function generateReport() {
+            // 计算偶像收入等级
+            const idolIncomeScore = calculateAverage(answers.idolIncome);
+            const idolValue = determineIdolValue(idolIncomeScore);
+            
+            // 计算用户投入分数
+            const userEconomicScore = calculateAverage(answers.userEconomic);
+            const userTimePsychologicalScore = calculateAverage(answers.userTimePsychological);
+            const userOpportunityScore = calculateAverage(answers.userOpportunity);
+            
+            // 确定用户投入等级
+            const userEconomicValue = getDimensionValue(userEconomicScore);
+            const userTimeValue = getDimensionValue(userTimePsychologicalScore);
+            const userPsychologicalValue = getDimensionValue(userTimePsychologicalScore);
+            const userOpportunityValue = getDimensionValue(userOpportunityScore);
+            
+            // 确定警报等级
+            const alertLevel = determineAlertLevel(userEconomicScore, userTimePsychologicalScore, userOpportunityScore);
+            
+            // 生成洞察
+            const insight = generateNeuroEconomicInsight(answers);
+            
+            // 更新报告内容
+            document.getElementById('idol-value').textContent = idolValue.title;
+            document.getElementById('idol-explanation').textContent = idolValue.explanation;
+            document.getElementById('economic-value').textContent = userEconomicValue;
+            document.getElementById('time-value').textContent = userTimeValue;
+            document.getElementById('psychological-value').textContent = userPsychologicalValue;
+            document.getElementById('opportunity-value').textContent = userOpportunityValue;
+            
+            const alertBox = document.getElementById('alert-box');
+            alertBox.className = `alert-box ${alertLevel.class}`;
+            alertBox.innerHTML = `
+                <strong>警报等级：</strong> ${alertLevel.title}<br>
+                <strong>建议措施：</strong> ${alertLevel.advice}
+            `;
+            
+            document.getElementById('insight-box').textContent = insight;
+            
+            // 生成报告ID
+            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('timestamp').textContent = timestamp;
+            document.getElementById('random-code').textContent = randomCode;
+            
+            // 显示报告
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('report-container').style.display = 'block';
+            
+            // 更新进度文本
+            document.getElementById('progress-text').textContent = '测评完成';
+            document.getElementById('progress').style.width = '100%';
+        }
+        
+        function calculateAverage(values) {
+            if (values.length === 0) return 0;
+            const sum = values.reduce((a, b) => a + b, 0);
+            return sum / values.length;
+        }
+        
+        function getDimensionValue(score) {
+            if (score <= 1.5) return '健康理性：投入在可承受范围内';
+            if (score <= 2.5) return '轻微溢出：开始挤占其他发展资源';
+            if (score <= 3.5) return '中度失衡：明显影响生活质量';
+            return '重度错配：严重影响财务安全';
+        }
+        
+        function determineIdolValue(score) {
+            if (score >= 3.5) {
+                return {
+                    level: 'gold',
+                    title: '黄金级关系健康度',
+                    explanation: '"偶像"硬实力强劲，您的投入在理性消费范围内。这种关系更多是基于价值交换的平等互动。'
+                };
+            } else if (score >= 2.5) {
+                return {
+                    level: 'silver', 
+                    title: '白银级关系平衡度',
+                    explanation: '"偶像"实力稳定，您的投入基本可控。但需警惕单向价值输送的潜在风险。'
+                };
+            } else if (score >= 1.5) {
+                return {
+                    level: 'bronze',
+                    title: '青铜级关系预警度', 
+                    explanation: '存在明显的投入产出不对等。您在承担超出其实际价值的支持成本。'
+                };
+            } else {
+                return {
+                    level: 'iron',
+                    title: '黑铁级关系风险度',
+                    explanation: '严重的资源错配。您的支持行为更接近于情感层面的"无偿输血"。'
+                };
+            }
+        }
+        
+        function determineAlertLevel(economicScore, timeScore, opportunityScore) {
+            const maxScore = Math.max(economicScore, timeScore, opportunityScore);
+            
+            if (maxScore >= 3.6) {
+                return {
+                    title: '红色风险区',
+                    class: 'alert-high',
+                    advice: '立即止损，重新评估关系价值，考虑寻求专业咨询'
+                };
+            } else if (maxScore >= 2.6) {
+                return {
+                    title: '橙色警报区', 
+                    class: 'alert-medium',
+                    advice: '设立明确的投入上限，优化时间分配，关注个人发展'
+                };
+            } else if (maxScore >= 1.6) {
+                return {
+                    title: '黄色提醒区',
+                    class: 'alert-warning',
+                    advice: '保持警觉，定期复查资源配置，确保个人发展不受影响'
+                };
+            } else {
+                return {
+                    title: '绿色安全区',
+                    class: 'alert-low',
+                    advice: '保持现状，定期复查，确保资源配置持续优化'
+                };
+            }
+        }
+        
+        function generateNeuroEconomicInsight(answers) {
+            // 基于用户答案生成神经经济学视角的洞察
+            const totalScore = calculateAverage(answers.userEconomic) + 
+                             calculateAverage(answers.userTimePsychological) + 
+                             calculateAverage(answers.userOpportunity);
+            
+            if (totalScore >= 9) {
+                return "神经经济学视角：您的大脑奖赏系统对偶像刺激的反应强度已显著影响理性决策能力。前额叶皮层对边缘系统的调控减弱，可能导致长期规划能力受损。建议重新平衡即时满足与长期价值的关系。";
+            } else if (totalScore >= 6) {
+                return "神经经济学视角：您的大脑在处理偶像相关信息时显示出明显的认知偏好，这可能挤占了用于个人发展的认知资源。建议建立明确的认知资源分配机制，确保重要决策不受情感因素过度影响。";
+            } else if (totalScore >= 3) {
+                return "神经经济学视角：您的大脑保持了相对理性的资源配置，但仍需警惕情感因素对决策质量的潜在影响。建议定期进行理性评估，确保情感投入与个人发展目标保持一致。";
+            } else {
+                return "神经经济学视角：您的大脑资源配置相对均衡，情感投入与理性决策保持良好平衡。这种状态有助于在享受情感价值的同时，确保个人发展不受影响。";
+            }
+        }
+        
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // 克隆报告容器
+            const reportElement = document.getElementById('report-container');
+            const clone = reportElement.cloneNode(true);
+            
+            // 移除升级服务说明部分和下载按钮
+            const upgradeSection = clone.querySelector('#upgrade-section');
+            if (upgradeSection) {
+                upgradeSection.remove();
+            }
+            
+            // 移除下载按钮
+            const downloadBtn = clone.querySelector('.btn-download');
+            if (downloadBtn) {
+                downloadBtn.remove();
+            }
+            
+            // 添加PDF底部品牌标识
+            const brandFooter = document.createElement('div');
+            brandFooter.innerHTML = '<div style="text-align: center; padding: 20px; color: #666; font-style: italic; margin-top: 30px; border-top: 1px solid #eee;">逻各爱 · 让每一份情感投入创造真实价值</div>';
+            clone.appendChild(brandFooter);
+            
+            // 将克隆元素添加到文档中（隐藏）
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            document.body.appendChild(clone);
+            
+            html2canvas(clone, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                scrollY: 0
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                
+                let position = 0;
+                
+                doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                // 如果内容超过一页，添加新页
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight + pageHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                doc.save(`"偶像"关系价值测评报告_${answers.idolName}.pdf`);
+                
+                // 清理克隆元素
+                document.body.removeChild(clone);
+            }).catch(error => {
+                console.error('生成PDF时出错:', error);
+                alert('生成PDF时出现错误，请确保您使用的是现代浏览器，并尝试刷新页面后重试。');
+                // 确保清理克隆元素
+                if (document.body.contains(clone)) {
+                    document.body.removeChild(clone);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
